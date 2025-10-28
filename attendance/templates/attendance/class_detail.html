@@ -1,0 +1,321 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Class Detail{% endblock %}
+
+{% block content %}
+    <div class="class-detail-container">
+        <div class="class-detail-box">
+            <h1 class="class-header">{{ class_instance.name }} Class</h1>
+
+            <h2 class="add-student-header">Add New Students Below</h2>
+            <form method="post" action="" class="add-student-form">
+                {% csrf_token %}
+                <div class="student-inputs">
+                    <input type="text" name="name" placeholder="Enter student name" required class="student-name-input">
+                    <input type="text" name="roll_no" placeholder="Enter roll no" required class="roll-no-input">
+                    <input type="email" name="guardian_email" placeholder="Enter guardian's email" class="guardian-email-input">
+                </div>
+                <button type="submit" class="add-student-button">Add Student</button>
+            </form>
+
+            <div class="students-table-container">
+                <table class="students-table">
+                    <thead>
+                        <tr class="table-header">
+                            <th>Student Name</th>
+                            <th>Roll No</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for class_student in class_students %}
+                        <tr class="student-row">
+                            <td>{{ class_student.student.name }}</td>
+                            <td>{{ class_student.student.roll_no }}</td>
+                            <td>
+                                <a href="{% url 'edit_student' class_student.student.id %}" class="edit-button">Edit</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'take_attendance' class_instance.id %}" class="action-button">Take Attendance</a>
+                <a href="{% url 'attendance_dates' class_instance.id %}" class="action-button">View Attendance Records</a>
+                <a href="{% url 'generate_report' class_instance.id %}" class="action-button">Generate Attendance Report</a>
+                <a href="{% url 'edit_class' class_instance.id %}" class="edit-class-button">Edit Class</a>
+                <a href="{% url 'delete_class' class_instance.id %}" class="delete-class-button" onclick="return confirm('Are you sure you want to delete this class?');">Delete Class</a>
+            </div>
+        </div>
+        
+        
+    </div>
+
+<style>
+
+
+    .message-container {
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .guardian-email-input {
+        flex: 1;
+        padding: 10px;
+        background-color: #2C3E50;
+        color: #C5C6C7;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .class-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .edit-class-button,
+    .delete-class-button {
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    .edit-class-button {
+        background-color: #4F6C8A;
+        color: white;
+    }
+    
+    .delete-class-button {
+        background-color: #D9534F;
+        color: white;
+    }
+    
+
+    .alert {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        display: inline-block;
+        font-size: 16px;
+        transition: opacity 0.5s ease;
+    }
+
+    .alert.success {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .alert.warning {
+        background-color: #f0ad4e;
+        color: white;
+    }
+
+    .fade-out {
+        opacity: 0;
+    }
+
+   
+    .class-detail-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .class-detail-box {
+        width: 80%;
+        max-width: 1000px;
+        margin-top: 40px;
+        background-color: #212E3C;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    
+    .class-header {
+        background-color: #4F6C8A;
+        text-align: center;
+        color: #C5C6C7;
+        padding: 15px;
+        border-radius: 10px 10px 0 0;
+        margin: -20px -20px 20px -20px;
+        font-size: 24px;
+    }
+
+    .add-student-header {
+        color: #C5C6C7;
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: 20px;
+    }
+
+    
+    .add-student-form {
+        max-width: 600px;
+        width: 100%;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .student-inputs {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .student-name-input,
+    .roll-no-input {
+        flex: 1;
+        padding: 10px;
+        background-color: #2C3E50;
+        color: #C5C6C7;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .add-student-button {
+        width: 100%;
+        padding: 10px 20px;
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    
+    .students-table-container {
+        max-width: 100%;
+        overflow-x: auto;
+        margin-top: 20px;
+    }
+
+    .students-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table-header {
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+    }
+
+    .student-row {
+        border: 1px solid #4F6C8A;
+        color: #C5C6C7;
+    }
+
+    .student-row td {
+        padding: 12px;
+        border: 1px solid #2C3E50;
+        font-size: 16px;
+    }
+
+    .edit-button {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #2C3E50;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+   
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .action-button {
+        display: inline-block;
+        padding: 12px 20px;
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    
+    @media (max-width: 768px) {
+        .class-detail-box {
+            width: 90%;
+            margin: 20px auto; 
+        }
+
+        .student-inputs {
+            flex-direction: column; 
+            gap: 5px;
+        }
+
+        .student-name-input,
+        .roll-no-input {
+            width: 80%; 
+        }
+    }
+
+    @media (max-width: 480px) {
+        .class-detail-box {
+            width: 95%; 
+            margin: 10px auto; 
+            padding: 15px; 
+        }
+
+        .class-header {
+            font-size: 22px; 
+            padding: 10px; 
+        }
+
+        .add-student-header {
+            font-size: 18px;
+        }
+
+        .add-student-button,
+        .action-button {
+            padding: 8px; 
+        }
+
+        .students-table td {
+            font-size: 14px; 
+        }
+    }
+</style>
+{% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.classList.add('fade-out');
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 500); // Wait for fade-out to complete
+            }, 5000); // Time before fade-out (in milliseconds)
+        });
+    });
+</script>
+
+{% endblock %}

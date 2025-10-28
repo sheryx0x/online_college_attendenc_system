@@ -1,0 +1,86 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Attendance Dates{% endblock %}
+
+{% block content %}
+    <div class="attendance-dates-container">
+        <h1 class="attendance-header">Attendance Records for {{ class_instance.name }}</h1>
+        <ul class="attendance-dates-list">
+            {% for date in attendance_dates %}
+            <li class="attendance-date-item">
+                <a href="{% url 'attendance_records' class_instance.id date.date %}" class="attendance-date-link">{{ date.date }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+<style>
+   
+    .attendance-dates-container {
+        width: 80%;
+        margin: 40px auto 0;
+        background-color: #212E3C;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    
+    .attendance-header {
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        padding: 10px 20px;
+        border-radius: 10px 10px 0 0;
+        margin: -20px -20px 20px -20px;
+    }
+
+    
+    .attendance-dates-list {
+        list-style-type: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap; 
+        justify-content: center; 
+    }
+
+    
+    .attendance-date-item {
+        background-color: #2C3E50;
+        margin: 5px; 
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    
+    .attendance-date-link {
+        text-decoration: none;
+        color: #C5C6C7;
+        display: block;
+        padding: 8px 12px; 
+        font-size: 14px; 
+    }
+
+    .attendance-date-item:hover {
+        background-color: #4F6C8A; 
+    }
+
+    
+    @media (max-width: 768px) {
+        .attendance-header {
+            font-size: 20px; 
+            padding: 8px; 
+        }
+
+        .attendance-date-link {
+            font-size: 12px; 
+            padding: 6px 10px; 
+        }
+    }
+
+    @media (max-width: 480px) {
+        .attendance-header {
+            font-size: 18px; 
+        }
+    }
+</style>
+{% endblock %}

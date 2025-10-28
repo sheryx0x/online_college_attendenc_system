@@ -1,0 +1,140 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Attendance System{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Nunito', Arial, sans-serif;
+            background-color: #2C3E50;
+            color: #1F2833;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        h1, h2, h3, h4, .header, .title {
+            font-family: 'Playfair Display', serif; 
+            font-weight: 700; 
+        }
+        
+        
+        p {
+            font-family: 'Nunito', Arial, sans-serif; 
+            font-size: 1em; 
+            line-height: 1.6; 
+            
+        }
+        
+        
+        a {
+            font-family: 'Nunito', Arial, sans-serif; 
+            
+        }
+        
+        button, .btn {
+            font-family: 'Nunito', Arial, sans-serif; 
+            font-weight: 600; 
+            
+        }
+
+
+        table th, table td {
+            font-family: 'Nunito', Arial, sans-serif;
+            font-size: 16px;
+            
+        }
+        
+        table thead th {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            
+        }
+        
+        
+        
+        
+        
+        label {
+            font-family: 'Nunito', Arial, sans-serif; 
+            font-weight: 600; 
+            
+        }
+        
+        
+        .navbar {
+            background-color: #4F6C8A;
+            overflow: hidden;
+        }
+
+        
+        .navbar a.logo {
+            float: left;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        .navbar a.logo img {
+            height: 40px; 
+            width: auto;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #C5C6C7;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+        
+        .navbar a:hover {
+            background-color: #212E3C;
+            color: white;
+        }
+        
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer {
+            background-color: #2C3E50;
+            color: #C5C6C7;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        
+        <a href="{% url 'home' %}" class="logo">
+            <img src="{% static 'images/g41.png' %}" alt="Site Logo"> 
+        </a>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'logout' %}">Logout</a>
+        
+        {% endif %}
+    </div>
+
+    <div class="container">
+        {% block header %}{% endblock %}
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+</body>
+</html>

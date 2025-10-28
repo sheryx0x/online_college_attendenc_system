@@ -1,0 +1,153 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Generate Attendance Report{% endblock %}
+
+{% block content %}
+<div class="class-detail-container">
+    <div class="class-detail-box">
+        <h1 class="class-header">{{ class_instance.name }} Attendance Report</h1>
+        {% if errors %}
+        <div class="error-messages">
+            {% for error in errors %}
+            <p class="error">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <form method="post" action="" class="generate-report-form">
+            {% csrf_token %}
+            <div class="report-inputs">
+                <label style="color:#C5C6C7;" for="student_name">Student Name:</label>
+                <input type="text" name="student_name" placeholder="Enter student name" required 
+       class="student-name-input" pattern="[A-Za-z\s]+" 
+       title="Only letters and spaces allowed">
+
+<input type="text" name="roll_no" placeholder="Enter roll no" required 
+       class="roll-no-input" pattern="\d+" title="Only numbers allowed">
+
+                <label style="color:#C5C6C7;" for="month">Month:</label>
+                <select name="month" required class="month-select">
+                    <option value="">Select Month</option>
+                    {% for i in months %}
+                        <option value="{{ i }}">{{ i }}</option>
+                    {% endfor %}
+                </select>
+
+                <label style="color:#C5C6C7;" for="year">Year:</label>
+                <input type="number" name="year" placeholder="Enter year" required class="year-input">
+            </div>
+            <button type="submit" class="generate-report-button">Generate Report</button>
+        </form>
+    </div>
+</div>
+
+<style>
+
+    .class-detail-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .class-detail-box {
+        width: 80%;
+        max-width: 1000px;
+        margin-top: 40px;
+        background-color: #212E3C;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-family: 'Poppins', sans-serif;
+    }
+
+
+    .class-header {
+        background-color: #4F6C8A;
+        text-align: center;
+        color: #C5C6C7;
+        padding: 15px;
+        border-radius: 10px 10px 0 0;
+        margin: -20px -20px 20px -20px;
+        font-size: 24px;
+    }
+
+
+    .error-messages {
+        background-color: #ff4444;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    
+    .error {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+
+    .generate-report-form {
+        max-width: 600px;
+        width: 100%;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .report-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .student-name-input,
+    .roll-no-input,
+    .year-input {
+        padding: 10px;
+        background-color: #2C3E50;
+        color: #C5C6C7;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .month-select {
+        padding: 10px;
+        background-color: #2C3E50;
+        color: #C5C6C7;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .generate-report-button {
+        padding: 10px 20px;
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+ 
+    @media (max-width: 768px) {
+        .class-detail-box {
+            width: 90%;
+            margin: 20px auto; 
+        }
+    }
+
+    @media (max-width: 480px) {
+        .class-detail-box {
+            width: 95%; 
+            margin: 10px auto; 
+            padding: 15px; 
+        }
+
+        .class-header {
+            font-size: 22px; 
+            padding: 10px; 
+        }
+    }
+</style>
+{% endblock %}

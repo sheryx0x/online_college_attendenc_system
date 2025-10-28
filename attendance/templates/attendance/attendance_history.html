@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance History</title>
+</head>
+<body style="font-family: 'Poppins', sans-serif; background-color: #0B0C10; color: #C5C6C7; padding: 20px;">
+
+    <h1 style="background-color: #2C3E50; color: white; padding: 10px 20px; border-radius: 10px; margin-top: 0;">Attendance History for {{ class_instance.name }}</h1>
+
+    <table style="width: 80%; margin: 20px auto; border-collapse: collapse; background-color: #1F2833; border-radius: 10px;">
+        <thead>
+            <tr>
+                <th style="background-color: #100b0b; color: #66FCF1; padding: 10px; border: 1px solid #66FCF1; text-align: left;">Student Name</th>
+                <th style="background-color: #0B0C10; color: #66FCF1; padding: 10px; border: 1px solid #66FCF1; text-align: left;">Roll No</th>
+                <th style="background-color: #0B0C10; color: #66FCF1; padding: 10px; border: 1px solid #66FCF1; text-align: left;">Date</th>
+                <th style="background-color: #0B0C10; color: #66FCF1; padding: 10px; border: 1px solid #66FCF1; text-align: left;">Present</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class_student in class_students %}
+                {% for record in class_student.attendance_set.all %}
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #66FCF1; text-align: left; background-color: {% cycle '#0B0C10', '#1F2833' %}; color: #C5C6C7;">{{ class_student.student.name }}</td>
+                        <td style="padding: 10px; border: 1px solid #66FCF1; text-align: left; background-color: {% cycle '#0B0C10', '#1F2833' %}; color: #C5C6C7;">{{ class_student.student.roll_no }}</td>
+                        <td style="padding: 10px; border: 1px solid #66FCF1; text-align: left; background-color: {% cycle '#0B0C10', '#1F2833' %}; color: #C5C6C7;">{{ record.date }}</td>
+                        <td style="padding: 10px; border: 1px solid #66FCF1; text-align: left; background-color: {% cycle '#0B0C10', '#1F2833' %}; color: #C5C6C7;">{{ record.present }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

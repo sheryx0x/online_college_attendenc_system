@@ -1,0 +1,161 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Teacher Signup{% endblock %}
+{% block header %}
+<div class="signup-container">
+    <h1 class="signup-heading">Teacher Signup</h1>
+    <form method="post" action="" class="signup-form" id="signupForm">
+        {% csrf_token %}
+        <label for="username" class="form-label">Username:</label>
+        <input type="text" id="username" name="username" required class="form-input"
+               pattern="[A-Za-z0-9]+" title="Username should be alphanumeric (letters and numbers only)">
+        
+        <label for="email" class="form-label">Email:</label>
+        <input type="email" id="email" name="email" required class="form-input">
+        
+        <label for="password1" class="form-label">Password:</label>
+        <input type="password" id="password1" name="password1" required class="form-input" 
+               pattern=".{8,}" title="Password must be at least 8 characters long">
+        
+        <label for="password2" class="form-label">Confirm Password:</label>
+        <input type="password" id="password2" name="password2" required class="form-input">
+        
+        <button type="submit" class="submit-button">Signup</button>
+    </form>
+
+    <div class="signin-container">
+        <p>Already have an account? <a href="{% url 'signin' %}" class="signin-link">Signin</a></p>
+    </div>
+    
+    <a class="button" href="{% url 'home' %}">Back to Home</a>
+</div>
+
+
+<style>
+    .signup-container {
+        background-color: #212E3C;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 604px;
+        width: 100%;
+        margin: 40px auto;
+    }
+
+    .signup-heading {
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        padding: 10px 20px;
+        border-radius: 10px 10px 0 0;
+        margin: -20px -20px 20px -20px;
+    }
+
+    .signup-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .form-label {
+        display: block;
+        color: #C5C6C7;
+        margin-bottom: 10px;
+    }
+
+    .form-input {
+        width: calc(50% - 20px);
+        padding: 10px;
+        background-color: #2C3E50;
+        color: #C5C6C7;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .submit-button {
+        width: calc(50% - 20px);
+        max-width: 300px;
+        padding: 10px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        cursor: pointer;
+    }
+
+    .signin-container {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #C5C6C7;
+    }
+
+    .signin-link {
+        color: #4F6C8A;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .signin-link:hover {
+        text-decoration: underline;
+    }
+
+    .button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+
+    @media (max-width: 768px) {
+        .form-input, .submit-button, .button {
+            width: calc(70% - 20px);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .signup-container {
+            width: 90%;
+        }
+
+        .signup-heading {
+            font-size: 20px;
+        }
+
+        .form-input, .submit-button, .button {
+            width: calc(100% - 30px);
+            font-size: 14px;
+        }
+    }
+</style>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const signupForm = document.getElementById('signupForm');
+        const password1 = document.getElementById('password1');
+        const password2 = document.getElementById('password2');
+
+        signupForm.addEventListener('submit', function (event) {
+            password2.setCustomValidity('');
+            if (password1.value !== password2.value) {
+                password2.setCustomValidity('Passwords do not match. Please try again.');
+                event.preventDefault();
+            }
+        });
+
+        password2.addEventListener('input', function () {
+            if (password1.value === password2.value) {
+                password2.setCustomValidity('');
+            }
+        });
+    });
+</script>
+
+{% endblock %}

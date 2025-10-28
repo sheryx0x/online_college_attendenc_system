@@ -1,0 +1,131 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Take Attendance{% endblock %}
+
+{% block content %}
+    <div class="attendance-container">
+        <h1 class="attendance-header">Take Attendance</h1>
+        <form method="post" action="" class="attendance-form">
+            {% csrf_token %}
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Roll No</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for class_student in class_students %}
+                    <tr>
+                        <td>{{ class_student.student.name }}</td>
+                        <td>{{ class_student.student.roll_no }}</td>
+                        <td>
+                            <label>
+                                <input type="radio" name="present_{{ class_student.id }}" value="present" checked> Present
+                            </label>
+                            <label>
+                                <input type="radio" name="present_{{ class_student.id }}" value="absent"> Absent
+                            </label>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="submit-button">Submit</button>
+        </form>
+    </div>
+
+<style>
+
+    .attendance-container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 40px auto;
+        background-color: #212E3C;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-family: 'Poppins', sans-serif;
+    }
+
+   
+    .attendance-header {
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        text-align: center;
+        padding: 16px 24px;
+        border-radius: 10px 10px 0 0;
+        margin: -20px -20px 20px -20px;
+        font-size: 24px;
+    }
+
+    .attendance-form {
+        max-width: 800px;
+        margin: auto;
+    }
+
+    .attendance-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+
+    .attendance-table th {
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    .attendance-table td {
+        padding: 12px;
+        border: 1px solid #2C3E50;
+        color: #C5C6C7;
+        font-size: 16px;
+    }
+
+ 
+    .submit-button {
+        padding: 12px 24px;
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+        font-size: 16px;
+        display: block; 
+        width: 30%; 
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+    @media (max-width: 768px) {
+        .attendance-container {
+            width: 90%; 
+        }
+
+        .attendance-table th, 
+        .attendance-table td {
+            font-size: 14px; 
+        }
+
+        .submit-button {
+            padding: 10px; 
+            font-size: 14px; 
+        }
+    }
+
+    @media (max-width: 480px) {
+        .attendance-header {
+            font-size: 22px; 
+            padding: 10px; 
+        }
+
+        .attendance-table {
+            font-size: 12px; 
+        }
+    }
+</style>
+{% endblock %}

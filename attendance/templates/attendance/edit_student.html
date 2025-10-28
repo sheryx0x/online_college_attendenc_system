@@ -1,0 +1,135 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Edit Student Details{% endblock %}
+
+{% block content %}
+    <div class="edit-student-container">
+        <h1 class="edit-header">Edit Student Details: {{ student.name }}</h1>
+        <form method="post" action="" class="edit-student-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_name" class="form-label">Student Name:</label>
+                <input type="text" id="id_name" name="name" value="{{ student.name }}" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label for="id_roll_no" class="form-label">Roll No:</label>
+                <input type="text" id="id_roll_no" name="roll_no" value="{{ student.roll_no }}" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label for="id_guardian_email" class="form-label">Guardian Email:</label>
+                <input type="email" id="id_guardian_email" name="guardian_email" value="{{ student.guardian_email }}" required class="form-input">
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="save-button">Save Changes</button>
+                <a href="{% url 'class_detail' student.classstudent_set.first.class_name.id %}" class="back-button">Back to Class Detail</a>
+            </div>
+        </form>
+    </div>
+
+<style>
+
+    .edit-student-container {
+        width: 80%;
+        margin: 40px auto;
+        background-color: #212E3C;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-family: 'Poppins', sans-serif;
+        text-align: center; 
+    }
+
+ 
+    .edit-header {
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        padding: 16px 24px;
+        border-radius: 10px 10px 0 0;
+        margin: -20px -20px 20px -20px;
+        font-size: 24px;
+        text-align: center;
+    }
+
+ 
+    .edit-student-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .form-label {
+        font-size: 18px;
+        
+        color: #C5C6C7;
+        display: block;
+    }
+
+    .form-input {
+        margin-top:10px;
+        width: 40%;
+        padding: 10px;
+        background-color: #2C3E50;
+        color: #C5C6C7;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: center;
+        gap: 20px; 
+        margin-top: 20px;
+    }
+
+    .save-button {
+        padding: 10px 20px;
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .back-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+        text-align: center;
+    }
+
+ 
+    @media (max-width: 768px) {
+        .edit-student-container {
+            width: 90%; 
+        }
+
+        .form-input {
+            width: 90%; 
+        }
+
+        .button-group {
+            flex-direction: column; 
+            gap: 10px; 
+        }
+
+        .save-button,
+        .back-button {
+            width: 100%; 
+        }
+    }
+</style>
+{% endblock %}
