@@ -9,124 +9,251 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            font-family: 'Nunito', Arial, sans-serif;
-            background-color: #2C3E50;
-            color: #1F2833;
+        /* Reset and Base Styles */
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        body {
+            font-family: 'Nunito', Arial, sans-serif;
+            background-color: #2C3E50;
+            color: #ECF0F1;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
+        /* Typography */
         h1, h2, h3, h4, .header, .title {
             font-family: 'Playfair Display', serif; 
             font-weight: 700; 
         }
         
-        
         p {
             font-family: 'Nunito', Arial, sans-serif; 
             font-size: 1em; 
             line-height: 1.6; 
-            
         }
-        
         
         a {
             font-family: 'Nunito', Arial, sans-serif; 
-            
         }
         
         button, .btn {
             font-family: 'Nunito', Arial, sans-serif; 
             font-weight: 600; 
-            
         }
-
 
         table th, table td {
             font-family: 'Nunito', Arial, sans-serif;
             font-size: 16px;
-            
         }
         
         table thead th {
             font-family: 'Playfair Display', serif;
             font-weight: 700;
-            
         }
-        
-        
-        
-        
         
         label {
             font-family: 'Nunito', Arial, sans-serif; 
             font-weight: 600; 
-            
-        }
-        
-        
-        .navbar {
-            background-color: #4F6C8A;
-            overflow: hidden;
         }
 
-        
+        /* Navigation */
+        .navbar {
+            background-color: #4F6C8A;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            position: relative;
+            flex-wrap: wrap;
+        }
+
         .navbar a.logo {
-            float: left;
             display: flex;
             align-items: center;
-            padding: 10px 20px;
+            padding: 5px 0;
+        }
+
+        /* Remove hover effect specifically for logo */
+        .navbar a.logo:hover {
+            background-color: transparent !important;
         }
 
         .navbar a.logo img {
-            height: 40px; 
+            height: 35px;
             width: auto;
+            transition: transform 0.3s ease;
         }
 
-        .navbar a {
-            float: left;
-            display: block;
-            color: #C5C6C7;
-            text-align: center;
-            padding: 14px 20px;
-            text-decoration: none;
+        /* Optional: Add a subtle effect on logo image hover instead */
+        .navbar a.logo:hover img {
+            transform: scale(1.05);
         }
-        
-        .navbar a:hover {
+
+        /* Navigation Links - Always Visible */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            color: #C5C6C7;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
             background-color: #212E3C;
             color: white;
         }
-        
+
+        /* Main Content */
         .container {
-            padding: 20px;
+            padding: 20px 15px;
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
+            flex: 1;
         }
-        
+
+        /* Footer */
         .footer {
             background-color: #2C3E50;
             color: #C5C6C7;
             text-align: center;
-            padding: 10px 0;
-            position: fixed;
+            padding: 15px 10px;
             width: 100%;
-            bottom: 0;
+            margin-top: auto;
+        }
+
+        /* Medium screens (tablets) */
+        @media (min-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .nav-links {
+                gap: 20px;
+            }
+
+            .nav-links a {
+                padding: 10px 15px;
+                font-size: 15px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+
+        /* Large screens (desktops) */
+        @media (min-width: 1024px) {
+            .navbar {
+                padding: 0 40px;
+            }
+
+            .nav-links a {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 30px 40px;
+            }
+        }
+
+        /* Small screens adjustments */
+        @media (max-width: 767px) {
+            .navbar {
+                padding: 8px 10px;
+            }
+
+            .nav-links {
+                gap: 8px;
+            }
+
+            .nav-links a {
+                padding: 6px 8px;
+                font-size: 13px;
+            }
+
+            .navbar a.logo img {
+                height: 30px;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 6px 8px;
+            }
+
+            .nav-links {
+                gap: 6px;
+            }
+
+            .nav-links a {
+                padding: 5px 6px;
+                font-size: 12px;
+            }
+
+            .navbar a.logo img {
+                height: 25px;
+            }
+        }
+
+        /* Extra small screens - ensure text doesn't break */
+        @media (max-width: 360px) {
+            .nav-links a {
+                font-size: 11px;
+                padding: 4px 5px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .navbar, .footer {
+                display: none;
+            }
+            
+            body {
+                background-color: white;
+                color: black;
+            }
+            
+            .container {
+                padding: 0;
+                margin: 0;
+                max-width: none;
+            }
         }
     </style>
 </head>
 <body>
     <div class="navbar">
-        
         <a href="{% url 'home' %}" class="logo">
             <img src="{% static 'images/g41.png' %}" alt="Site Logo"> 
         </a>
-        {% if request.user.is_authenticated %}
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'logout' %}">Logout</a>
         
-        {% endif %}
+        <!-- Navigation Links - Always Visible -->
+        <div class="nav-links">
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+            {% endif %}
+        </div>
     </div>
 
     <div class="container">
@@ -136,5 +263,8 @@
         </div>
     </div>
 
+    <div class="footer">
+        <p>&copy; {% now "Y" %} Attendance System. All rights reserved.</p>
+    </div>
 </body>
 </html>

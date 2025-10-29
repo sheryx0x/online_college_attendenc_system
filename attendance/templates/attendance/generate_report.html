@@ -2,9 +2,10 @@
 {% block title %}Generate Attendance Report{% endblock %}
 
 {% block content %}
-<div class="class-detail-container">
-    <div class="class-detail-box">
-        <h1 class="class-header">{{ class_instance.name }} Attendance Report</h1>
+<div class="report-container">
+    <div class="report-box">
+        <h1 class="report-header">{{ class_instance.name }} Attendance Report</h1>
+        
         {% if errors %}
         <div class="error-messages">
             {% for error in errors %}
@@ -12,45 +13,70 @@
             {% endfor %}
         </div>
         {% endif %}
+        
         <form method="post" action="" class="generate-report-form">
             {% csrf_token %}
-            <div class="report-inputs">
-                <label style="color:#C5C6C7;" for="student_name">Student Name:</label>
-                <input type="text" name="student_name" placeholder="Enter student name" required 
-       class="student-name-input" pattern="[A-Za-z\s]+" 
-       title="Only letters and spaces allowed">
-
-<input type="text" name="roll_no" placeholder="Enter roll no" required 
-       class="roll-no-input" pattern="\d+" title="Only numbers allowed">
-
-                <label style="color:#C5C6C7;" for="month">Month:</label>
-                <select name="month" required class="month-select">
-                    <option value="">Select Month</option>
-                    {% for i in months %}
-                        <option value="{{ i }}">{{ i }}</option>
-                    {% endfor %}
-                </select>
-
-                <label style="color:#C5C6C7;" for="year">Year:</label>
-                <input type="number" name="year" placeholder="Enter year" required class="year-input">
+            <div class="form-section">
+                <h2 class="section-title">Student Information</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="student_name" class="form-label">Student Name:</label>
+                        <input type="text" id="student_name" name="student_name" placeholder="Enter student name" required 
+                               class="form-input" pattern="[A-Za-z\s]+" 
+                               title="Only letters and spaces allowed">
+                    </div>
+                    <div class="form-group">
+                        <label for="roll_no" class="form-label">Roll No:</label>
+                        <input type="text" id="roll_no" name="roll_no" placeholder="Enter roll no" required 
+                               class="form-input" pattern="\d+" title="Only numbers allowed">
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="generate-report-button">Generate Report</button>
+            
+            <div class="form-section">
+                <h2 class="section-title">Report Period</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="month" class="form-label">Month:</label>
+                        <select id="month" name="month" required class="form-select">
+                            <option value="">Select Month</option>
+                            {% for i in months %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="year" class="form-label">Year:</label>
+                        <input type="number" id="year" name="year" placeholder="Enter year" required 
+                               class="form-input" min="2000" max="2030" value="{% now 'Y' %}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button type="submit" class="generate-report-button">
+                    <span class="button-text">Generate Report</span>
+                    <span class="button-loading" style="display: none;">Generating...</span>
+                </button>
+            </div>
         </form>
     </div>
 </div>
 
 <style>
-
-    .class-detail-container {
+    /* Mobile First Styles */
+    .report-container {
         width: 100%;
         display: flex;
         justify-content: center;
+        padding: 20px 15px;
+        box-sizing: border-box;
     }
 
-    .class-detail-box {
-        width: 80%;
-        max-width: 1000px;
-        margin-top: 40px;
+    .report-box {
+        width: 100%;
+        max-width: 600px;
+        margin-top: 20px;
         background-color: #212E3C;
         padding: 20px;
         border-radius: 10px;
@@ -58,96 +84,377 @@
         font-family: 'Poppins', sans-serif;
     }
 
-
-    .class-header {
+    .report-header {
         background-color: #4F6C8A;
         text-align: center;
         color: #C5C6C7;
         padding: 15px;
         border-radius: 10px 10px 0 0;
-        margin: -20px -20px 20px -20px;
-        font-size: 24px;
+        margin: -20px -20px 25px -20px;
+        font-size: 20px;
+        font-weight: 700;
+        word-wrap: break-word;
     }
 
-
     .error-messages {
-        background-color: #ff4444;
-        color: white;
+        background-color: rgba(255, 68, 68, 0.1);
+        color: #ff6b6b;
         padding: 15px;
         border-radius: 5px;
         margin-bottom: 20px;
+        border-left: 4px solid #ff4444;
     }
     
     .error {
         margin: 5px 0;
         font-size: 14px;
+        line-height: 1.4;
     }
-
 
     .generate-report-form {
-        max-width: 600px;
         width: 100%;
-        margin: auto;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 20px;
     }
 
-    .report-inputs {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .student-name-input,
-    .roll-no-input,
-    .year-input {
-        padding: 10px;
+    .form-section {
         background-color: #2C3E50;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #4F6C8A;
+    }
+
+    .section-title {
+        color: #C5C6C7;
+        font-size: 18px;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #4F6C8A;
+        font-weight: 600;
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .form-label {
+        color: #C5C6C7;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .form-input,
+    .form-select {
+        padding: 12px 15px;
+        background-color: #34495E;
         color: #C5C6C7;
         border: none;
         border-radius: 5px;
         font-size: 16px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
     }
 
-    .month-select {
-        padding: 10px;
-        background-color: #2C3E50;
-        color: #C5C6C7;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
+    .form-input:focus,
+    .form-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #4F6C8A;
+    }
+
+    .form-input::placeholder {
+        color: #7F8C8D;
+    }
+
+    .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23C5C6C7' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 12px;
+        padding-right: 40px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
     }
 
     .generate-report-button {
-        padding: 10px 20px;
+        padding: 14px 30px;
         background-color: #4F6C8A;
         color: #C5C6C7;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        min-height: 48px;
+        width: 100%;
+        max-width: 300px;
     }
 
- 
-    @media (max-width: 768px) {
-        .class-detail-box {
-            width: 90%;
-            margin: 20px auto; 
+    .generate-report-button:hover {
+        background-color: #3A5A78;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .generate-report-button:active {
+        transform: translateY(0);
+    }
+
+    .generate-report-button.loading {
+        background-color: #2C3E50;
+        cursor: not-allowed;
+    }
+
+    .generate-report-button.loading .button-text {
+        display: none;
+    }
+
+    .generate-report-button.loading .button-loading {
+        display: inline;
+    }
+
+    /* Validation styles */
+    .form-input:valid {
+        border-left: 3px solid #2ECC71;
+    }
+
+    .form-input:invalid:not(:focus):not(:placeholder-shown) {
+        border-left: 3px solid #E74C3C;
+    }
+
+    .validation-hint {
+        font-size: 12px;
+        color: #7F8C8D;
+        margin-top: 5px;
+    }
+
+    /* Medium screens (tablets) */
+    @media (min-width: 600px) {
+        .report-container {
+            padding: 30px 20px;
+        }
+
+        .report-box {
+            margin-top: 30px;
+            padding: 25px;
+        }
+
+        .report-header {
+            margin: -25px -25px 25px -25px;
+            padding: 18px 25px;
+            font-size: 22px;
+        }
+
+        .form-row {
+            flex-direction: row;
+        }
+
+        .form-section {
+            padding: 20px;
         }
     }
 
-    @media (max-width: 480px) {
-        .class-detail-box {
-            width: 95%; 
-            margin: 10px auto; 
-            padding: 15px; 
+    /* Large screens (desktops) */
+    @media (min-width: 992px) {
+        .report-container {
+            padding: 40px;
         }
 
-        .class-header {
-            font-size: 22px; 
-            padding: 10px; 
+        .report-box {
+            margin-top: 40px;
+            max-width: 700px;
+        }
+
+        .report-header {
+            font-size: 24px;
+        }
+
+        .form-input,
+        .form-select {
+            padding: 14px 15px;
+        }
+    }
+
+    /* Very small screens */
+    @media (max-width: 360px) {
+        .report-container {
+            padding: 15px 10px;
+        }
+
+        .report-box {
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .report-header {
+            margin: -15px -15px 20px -15px;
+            padding: 12px 15px;
+            font-size: 18px;
+        }
+
+        .form-section {
+            padding: 12px;
+        }
+
+        .form-input,
+        .form-select,
+        .generate-report-button {
+            font-size: 15px;
+            padding: 12px;
+        }
+    }
+
+    /* Print styles */
+    @media print {
+        .report-box {
+            background-color: white;
+            color: black;
+            box-shadow: none;
+        }
+        
+        .report-header {
+            background-color: #f0f0f0;
+            color: black;
+        }
+        
+        .form-section {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+        }
+        
+        .form-input,
+        .form-select {
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.generate-report-form');
+        const generateButton = document.querySelector('.generate-report-button');
+        const currentYear = new Date().getFullYear();
+        
+        // Set current year as default if empty
+        const yearInput = document.getElementById('year');
+        if (!yearInput.value) {
+            yearInput.value = currentYear;
+        }
+        
+        // Form validation
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Validate year range
+            if (yearInput.value < 2000 || yearInput.value > 2030) {
+                showError(yearInput, 'Please enter a valid year between 2000 and 2030');
+                isValid = false;
+            }
+            
+            // Validate month selection
+            const monthSelect = document.getElementById('month');
+            if (!monthSelect.value) {
+                showError(monthSelect, 'Please select a month');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Show loading state
+                generateButton.classList.add('loading');
+                generateButton.disabled = true;
+                
+                // Re-enable after 5 seconds (in case of slow generation)
+                setTimeout(() => {
+                    generateButton.classList.remove('loading');
+                    generateButton.disabled = false;
+                }, 5000);
+            } else {
+                e.preventDefault();
+                
+                // Scroll to first error
+                const firstError = document.querySelector('.error-message');
+                if (firstError) {
+                    firstError.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                }
+            }
+        });
+        
+        function showError(input, message) {
+            // Remove existing error for this input
+            const existingError = input.parentNode.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            const error = document.createElement('div');
+            error.className = 'error-message';
+            error.textContent = message;
+            error.style.marginTop = '5px';
+            error.style.fontSize = '14px';
+            error.style.color = '#E74C3C';
+            input.parentNode.appendChild(error);
+            input.style.border = '1px solid #E74C3C';
+            
+            // Add focus to problematic field
+            input.focus();
+        }
+        
+        // Clear error when user starts typing/selecting
+        const inputs = form.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                this.style.border = 'none';
+                const error = this.parentNode.querySelector('.error-message');
+                if (error) {
+                    error.remove();
+                }
+            });
+        });
+        
+        // Add real-time validation hints
+        const studentNameInput = document.getElementById('student_name');
+        const rollNoInput = document.getElementById('roll_no');
+        
+        // Add pattern validation hints
+        addValidationHint(studentNameInput, 'Only letters and spaces allowed');
+        addValidationHint(rollNoInput, 'Only numbers allowed');
+        
+        function addValidationHint(input, hintText) {
+            const hint = document.createElement('div');
+            hint.className = 'validation-hint';
+            hint.textContent = hintText;
+            input.parentNode.appendChild(hint);
+        }
+        
+        // Auto-format student name (capitalize first letter of each word)
+        studentNameInput.addEventListener('blur', function() {
+            if (this.value) {
+                this.value = this.value.replace(/\b\w/g, function(char) {
+                    return char.toUpperCase();
+                });
+            }
+        });
+    });
+</script>
 {% endblock %}

@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance Report</title>
     <style>
-        
+        /* Reset and Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            line-height: 1.6;
         }
 
         .container {
@@ -24,32 +31,46 @@
 
         header {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #004ba4;
         }
 
-    
         .logo {
             width: 80px;
+            height: auto;
+            margin-bottom: 15px;
         }
 
         h1 {
             font-size: 24px;
             margin: 0;
+            color: #004ba4;
         }
 
         h2 {
             font-size: 18px;
             color: #555;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            line-height: 1.4;
         }
 
-   
+        /* Table Styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 30px;
+            -webkit-overflow-scrolling: touch;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            min-width: 300px; /* Ensure table doesn't get too narrow */
         }
 
         th, td {
@@ -61,6 +82,7 @@
         th {
             background-color: #004ba4;
             color: white;
+            font-weight: 600;
         }
 
         tr:nth-child(even) {
@@ -71,47 +93,343 @@
             background-color: #f1f1f1;
         }
 
-    
+        .status-present {
+            color: #2E7D32;
+            font-weight: 600;
+        }
+
+        .status-absent {
+            color: #C62828;
+            font-weight: 600;
+        }
+
+        /* Summary Section */
+        .summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #004ba4;
+        }
+
+        .summary h3 {
+            color: #004ba4;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .summary-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #004ba4;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Footer */
         footer {
             text-align: center;
             font-size: 14px;
             color: #777;
             margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                margin: 0;
+                padding: 15px;
+                max-width: 100%;
+            }
+            
+            .no-print {
+                display: none;
+            }
+            
+            table {
+                page-break-inside: auto;
+            }
+            
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+                border-radius: 5px;
+            }
+            
+            header {
+                margin-bottom: 20px;
+            }
+            
+            .logo {
+                width: 60px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            h2 {
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            
+            .summary-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stat-item {
+                min-width: auto;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 5px;
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 18px;
+            }
+            
+            h2 {
+                font-size: 15px;
+            }
+            
+            th, td {
+                padding: 6px 8px;
+                font-size: 13px;
+            }
+            
+            .summary {
+                padding: 10px;
+            }
+            
+            .summary h3 {
+                font-size: 16px;
+            }
+            
+            footer {
+                font-size: 12px;
+            }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background-color: #004ba4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #00357a;
+        }
+
+        .btn-print {
+            background-color: #2E7D32;
+        }
+
+        .btn-print:hover {
+            background-color: #1B5E20;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+
+        .empty-state p {
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-    
+        <!-- Action Buttons -->
+        <div class="action-buttons no-print">
+            <button class="btn btn-print" onclick="window.print()">Print Report</button>
+            <a href="#" class="btn" onclick="history.back()">Go Back</a>
+        </div>
+        
+        <!-- Header -->
         <header>
             <img src="{% static 'images/g41.png' %}" alt="School Logo" class="logo"> 
             <h1>Attendance Report</h1>
         </header>
 
+        <!-- Student Info -->
         <h2>Student: {{ student.student.name }} | Class: {{ class_instance.name }}</h2>
 
-       
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for attendance in attendances %}
+        <!-- Summary Stats -->
+        <div class="summary">
+            <h3>Attendance Summary</h3>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-value">{{ total_present }}</div>
+                    <div class="stat-label">Days Present</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ total_absent }}</div>
+                    <div class="stat-label">Days Absent</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ total_days }}</div>
+                    <div class="stat-label">Total Days</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ attendance_percentage }}%</div>
+                    <div class="stat-label">Attendance %</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Table -->
+        <div class="table-container">
+            {% if attendances %}
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ attendance.date }}</td>
-                        <td>{{ 'Present' if attendance.present else 'Absent' }}</td>
+                        <th>Date</th>
+                        <th>Day</th>
+                        <th>Status</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for attendance in attendances %}
+                        <tr>
+                            <td>{{ attendance.date }}</td>
+                            <td>{{ attendance.date|date:"l" }}</td>
+                            <td class="status-{{ attendance.present|yesno:'present,absent' }}">
+                                {{ attendance.present|yesno:"Present,Absent" }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <p>No attendance records found for the selected period.</p>
+            </div>
+            {% endif %}
+        </div>
     </div>
 
- 
+    <!-- Footer -->
     <footer>
-        &copy; {{ current_year }} Your School Name. All rights reserved.
+        &copy; {% now "Y" %} BS FGDC. All rights reserved.<br>
+        <small>Report generated on {% now "F j, Y" %}</small>
     </footer>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add row highlighting on click
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    this.classList.toggle('highlighted');
+                });
+            });
+
+            // Add print functionality
+            const printButton = document.querySelector('.btn-print');
+            printButton.addEventListener('click', function() {
+                window.print();
+            });
+
+            // Calculate summary stats if not provided by server
+            function calculateStats() {
+                const presentCount = document.querySelectorAll('.status-present').length;
+                const absentCount = document.querySelectorAll('.status-absent').length;
+                const totalCount = presentCount + absentCount;
+                
+                // Update stats if elements exist
+                const presentEl = document.querySelector('.stat-value:nth-child(1)');
+                const absentEl = document.querySelector('.stat-value:nth-child(2)');
+                const totalEl = document.querySelector('.stat-value:nth-child(3)');
+                const percentageEl = document.querySelector('.stat-value:nth-child(4)');
+                
+                if (presentEl && totalCount > 0) {
+                    const percentage = Math.round((presentCount / totalCount) * 100);
+                    
+                    if (presentEl.textContent === '{{ total_present }}') {
+                        // Server values are already set, don't override
+                        return;
+                    }
+                    
+                    presentEl.textContent = presentCount;
+                    if (absentEl) absentEl.textContent = absentCount;
+                    if (totalEl) totalEl.textContent = totalCount;
+                    if (percentageEl) percentageEl.textContent = percentage + '%';
+                }
+            }
+            
+            // Run calculation after page loads
+            setTimeout(calculateStats, 100);
+        });
+    </script>
 </body>
 </html>

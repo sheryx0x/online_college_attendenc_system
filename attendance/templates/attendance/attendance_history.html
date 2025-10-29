@@ -2,33 +2,183 @@
 <html>
 <head>
     <title>Attendance History</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0B0C10;
+            color: #C5C6C7;
+            padding: 15px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: #2C3E50;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 20px 0;
+            border-radius: 10px;
+            background-color: #1F2833;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px; /* Minimum width for table to maintain readability */
+        }
+
+        th {
+            background-color: #0B0C10;
+            color: #66FCF1;
+            padding: 12px 8px;
+            border: 1px solid #66FCF1;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 10px 8px;
+            border: 1px solid #66FCF1;
+            text-align: left;
+        }
+
+        .row-light {
+            background-color: #0B0C10;
+        }
+
+        .row-dark {
+            background-color: #1F2833;
+        }
+
+        .present-true {
+            color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .present-false {
+            color: #F44336;
+            font-weight: 600;
+        }
+
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 12px;
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+                font-size: 14px;
+            }
+            
+            table {
+                min-width: 500px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                font-size: 16px;
+                padding: 10px;
+            }
+            
+            th, td {
+                padding: 6px 4px;
+                font-size: 13px;
+            }
+            
+            table {
+                min-width: 450px;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+                padding: 0;
+            }
+            
+            .header {
+                background-color: #f0f0f0;
+                color: black;
+            }
+            
+            .table-container {
+                box-shadow: none;
+            }
+            
+            th, td {
+                border-color: #666;
+            }
+        }
+    </style>
 </head>
-<body style="font-family: 'Poppins', sans-serif; background-color: #0B0C10; color: #C5C6C7; padding: 20px;">
+<body>
+    <div class="container">
+        <h1 class="header">Attendance History for {{ class_instance.name }}</h1>
 
-    <h1 style="background-color: #2C3E50; color: white; padding: 10px 20px; border-radius: 10px; margin-top: 0;">Attendance History for {{ class_instance.name }}</h1>
-
-    <table style="width: 80%; margin: 20px auto; border-collapse: collapse; background-color: #1F2833; border-radius: 10px;">
-        <thead>
-            <tr>
-                <th style="background-color: #100b0b; color: #66FCF1; padding: 10px; border: 1px solid #66FCF1; text-align: left;">Student Name</th>
-                <th style="background-color: #0B0C10; color: #66FCF1; padding: 10px; border: 1px solid #66FCF1; text-align: left;">Roll No</th>
-                <th style="background-color: #0B0C10; color: #66FCF1; padding: 10px; border: 1px solid #66FCF1; text-align: left;">Date</th>
-                <th style="background-color: #0B0C10; color: #66FCF1; padding: 10px; border: 1px solid #66FCF1; text-align: left;">Present</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for class_student in class_students %}
-                {% for record in class_student.attendance_set.all %}
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td style="padding: 10px; border: 1px solid #66FCF1; text-align: left; background-color: {% cycle '#0B0C10', '#1F2833' %}; color: #C5C6C7;">{{ class_student.student.name }}</td>
-                        <td style="padding: 10px; border: 1px solid #66FCF1; text-align: left; background-color: {% cycle '#0B0C10', '#1F2833' %}; color: #C5C6C7;">{{ class_student.student.roll_no }}</td>
-                        <td style="padding: 10px; border: 1px solid #66FCF1; text-align: left; background-color: {% cycle '#0B0C10', '#1F2833' %}; color: #C5C6C7;">{{ record.date }}</td>
-                        <td style="padding: 10px; border: 1px solid #66FCF1; text-align: left; background-color: {% cycle '#0B0C10', '#1F2833' %}; color: #C5C6C7;">{{ record.present }}</td>
+                        <th>Student Name</th>
+                        <th>Roll No</th>
+                        <th>Date</th>
+                        <th>Present</th>
                     </tr>
-                {% endfor %}
-            {% endfor %}
-        </tbody>
-    </table>
-
+                </thead>
+                <tbody>
+                    {% for class_student in class_students %}
+                        {% for record in class_student.attendance_set.all %}
+                            <tr class="{% cycle 'row-light' 'row-dark' %}">
+                                <td>{{ class_student.student.name }}</td>
+                                <td>{{ class_student.student.roll_no }}</td>
+                                <td>{{ record.date }}</td>
+                                <td class="present-{{ record.present|lower }}">
+                                    {% if record.present %}
+                                        Present
+                                    {% else %}
+                                        Absent
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>

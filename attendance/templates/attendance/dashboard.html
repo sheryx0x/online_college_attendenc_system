@@ -5,126 +5,329 @@
     <div class="dashboard-container">
         <h1 class="dashboard-heading">Teacher Dashboard</h1>
 
-        {% for department in departments %}
-            <h2 class="department-heading">{{ department.name }}</h2>
-            <div class="class-list">
-                {% for class in classes %}
-                    {% if class.department == department %}
-                        <a href="{% url 'class_detail' class.id %}" class="class-link">{{ class.name }}</a>
-                    {% endif %}
+        {% if departments %}
+            <div class="departments-container">
+                {% for department in departments %}
+                    <div class="department-section">
+                        <h2 class="department-heading">{{ department.name }}</h2>
+                        <div class="class-list">
+                            {% for class in classes %}
+                                {% if class.department == department %}
+                                    <a href="{% url 'class_detail' class.id %}" class="class-link">
+                                        <span class="class-name">{{ class.name }}</span>
+                                        <span class="class-arrow">→</span>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
-        {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p>No departments or classes found.</p>
+                <p>Create your first class to get started!</p>
+            </div>
+        {% endif %}
 
         <div class="create-class-container">
-            <a href="{% url 'create_class' %}" class="create-class-link">Create Class</a>
+            <a href="{% url 'create_class' %}" class="create-class-link">
+                <span class="create-class-icon">+</span>
+                Create New Class
+            </a>
         </div>
     </div>
 
 <style>
-
+    /* Mobile First Styles */
     .dashboard-container {
-        width: 80%;
-        margin: 40px auto 0;
+        width: 95%;
+        margin: 20px auto 0;
         text-align: center;
         background-color: #212E3C;
-        padding: 20px;
+        padding: 15px;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
     }
     
     .dashboard-heading {
         background-color: #4F6C8A;
         color: #C5C6C7;
-        padding: 10px 20px;
+        padding: 12px 15px;
         border-radius: 10px 10px 0 0;
-        margin: -20px -20px 20px -20px;
-        font-size: 24px; 
+        margin: -15px -15px 20px -15px;
+        font-size: 20px;
+        font-weight: 700;
+        word-wrap: break-word;
     }
     
-    .department-heading {
-        margin-bottom: 20px;
-        color: #C5C6C7;
-        text-align: center;
+    .departments-container {
+        margin: 20px 0;
     }
 
- 
+    .department-section {
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: #2C3E50;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .department-heading {
+        margin-bottom: 15px;
+        color: #C5C6C7;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #4F6C8A;
+    }
+
     .class-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
         justify-content: center;
     }
 
     .class-link {
-        display: block;
-        width: 200px;
-        padding: 15px;
-        background-color: #2C3E50;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        background-color: #34495E;
         color: #C5C6C7;
-        text-align: center;
         text-decoration: none;
         border-radius: 5px;
-        transition: background-color 0.3s;
+        transition: all 0.3s ease;
+        border-left: 4px solid #4F6C8A;
     }
 
     .class-link:hover {
         background-color: #4F6C8A;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    
-    .create-class-container {
-        margin-top: 20px;
+    .class-name {
+        font-weight: 600;
+        text-align: left;
+        flex: 1;
+    }
+
+    .class-arrow {
+        color: #66FCF1;
+        font-weight: bold;
+        margin-left: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .class-link:hover .class-arrow {
+        transform: translateX(3px);
+    }
+
+    .empty-state {
         text-align: center;
+        padding: 30px 20px;
+        color: #C5C6C7;
+        background-color: #2C3E50;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+
+    .empty-state p {
+        margin: 10px 0;
+        font-size: 16px;
+    }
+
+    .empty-state p:first-child {
+        font-weight: 600;
+        color: #4F6C8A;
+    }
+
+    .create-class-container {
+        margin-top: 25px;
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #4F6C8A;
     }
 
     .create-class-link {
-        display: inline-block;
-        padding: 10px 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px 20px;
         background-color: #4F6C8A;
         color: #C5C6C7;
         text-decoration: none;
         border-radius: 5px;
-        transition: background-color 0.3s;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 16px;
+        width: 100%;
+        max-width: 300px;
     }
 
     .create-class-link:hover {
-        background-color: #2C3E50;
+        background-color: #3A5A78;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    
-    @media (max-width: 768px) {
+    .create-class-icon {
+        font-size: 20px;
+        margin-right: 8px;
+        font-weight: bold;
+    }
+
+    /* Medium screens (tablets) */
+    @media (min-width: 600px) {
         .dashboard-container {
             width: 90%;
-            margin: 20px auto; 
-        }
-
-        .class-link, .create-class-link {
-            width: calc(100% - 40px); 
-        }
-    }
-
-    @media (max-width: 480px) {
-        .dashboard-container {
-            width: 95%; 
-            margin: 10px auto; 
-            padding: 15px; 
+            padding: 20px;
+            margin: 30px auto 0;
         }
 
         .dashboard-heading {
-            font-size: 22px; 
-            padding: 10px;
+            margin: -20px -20px 25px -20px;
+            padding: 15px 20px;
+            font-size: 22px;
         }
 
-        .class-link {
-            width: calc(100% - 20px); 
-            padding: 10px; 
+        .class-list {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .department-section {
+            padding: 20px;
         }
 
         .create-class-link {
-            width: calc(100% - 20px); 
-            padding: 10px; 
+            width: auto;
+            padding: 14px 25px;
+        }
+    }
+
+    /* Large screens (desktops) */
+    @media (min-width: 992px) {
+        .dashboard-container {
+            width: 85%;
+            max-width: 1200px;
+            margin: 40px auto 0;
+        }
+
+        .dashboard-heading {
+            font-size: 24px;
+        }
+
+        .department-heading {
+            font-size: 20px;
+        }
+
+        .class-list {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .class-link {
+            padding: 15px 20px;
+        }
+    }
+
+    /* Very small screens */
+    @media (max-width: 360px) {
+        .dashboard-container {
+            width: 98%;
+            padding: 12px;
+        }
+
+        .dashboard-heading {
+            margin: -12px -12px 15px -12px;
+            padding: 10px 12px;
+            font-size: 18px;
+        }
+
+        .department-section {
+            padding: 12px;
+        }
+
+        .class-link {
+            padding: 10px 12px;
+        }
+
+        .create-class-link {
+            padding: 12px 15px;
+            font-size: 15px;
+        }
+    }
+
+    /* Animation for empty state */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .empty-state {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Print styles */
+    @media print {
+        .dashboard-container {
+            background-color: white;
+            color: black;
+            box-shadow: none;
+        }
+        
+        .dashboard-heading {
+            background-color: #f0f0f0;
+            color: black;
+        }
+        
+        .class-link {
+            background-color: #f9f9f9;
+            color: black;
+            border: 1px solid #ccc;
+        }
+        
+        .create-class-link {
+            display: none;
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add loading animation to class links
+        const classLinks = document.querySelectorAll('.class-link');
+        
+        classLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Add loading state
+                this.style.opacity = '0.7';
+                this.style.pointerEvents = 'none';
+                
+                const originalText = this.querySelector('.class-name').textContent;
+                this.querySelector('.class-name').textContent = 'Loading...';
+                
+                // Reset after a delay (in case navigation is slow)
+                setTimeout(() => {
+                    this.style.opacity = '1';
+                    this.style.pointerEvents = 'auto';
+                    this.querySelector('.class-name').textContent = originalText;
+                }, 2000);
+            });
+        });
+        
+        // Add animation to department sections
+        const departmentSections = document.querySelectorAll('.department-section');
+        
+        departmentSections.forEach((section, index) => {
+            section.style.animationDelay = `${index * 0.1}s`;
+            section.style.animation = 'fadeIn 0.5s ease-out forwards';
+        });
+    });
+</script>
 {% endblock %}

@@ -5,210 +5,584 @@
         <h1 class="search-results-header">Attendance Records</h1>
         
         {% if attendance_records %}
-            <h2 class="student-name">Attendance Records for {{ student_name }}</h2>
-            <table class="attendance-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in attendance_records %}
-                    <tr>
-                        <td>{{ record.date }}</td>
-                        <td>{{ record.present|yesno:"Present,Absent" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="student-info">
+                <h2 class="student-name">Attendance Records for {{ student_name }}</h2>
+                {% if roll_no %}<p class="student-roll">Roll No: {{ roll_no }}</p>{% endif %}
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="card-value">{{ total_days }}</div>
+                    <div class="card-label">Total Days</div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-value present">{{ present_days }}</div>
+                    <div class="card-label">Present</div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-value absent">{{ absent_days }}</div>
+                    <div class="card-label">Absent</div>
+                </div>
+            </div>
+
+            <!-- Attendance Table -->
+            <div class="table-container">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Day</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance_records %}
+                        <tr class="status-{{ record.present|yesno:'present,absent' }}">
+                            <td>{{ record.date }}</td>
+                            <td>{{ record.date|date:"l" }}</td>
+                            <td>
+                                <span class="status-badge {{ record.present|yesno:'present,absent' }}">
+                                    {{ record.present|yesno:"Present,Absent" }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
             {% if percentage is not None %}
+                <!-- Attendance Percentage -->
                 <div class="attendance-percentage-container">
-                    <h2>Attendance Percentage</h2>
-                    <div class="progress-circle">
-                        <div class="progress-circle-outer"></div>
-                        <div class="progress-circle-inner" style="transform: rotate({{ percentage }}deg);"></div>
-                        <span>{{ percentage|floatformat:2 }}%</span>
+                    <h2 class="section-title">Attendance Percentage</h2>
+                    <div class="progress-container">
+                        <div class="progress-circle">
+                            <div class="progress-circle-outer">
+                                <div class="progress-circle-inner" style="transform: rotate({{ percentage|floatformat:0 }}deg);"></div>
+                            </div>
+                            <span class="percentage-text">{{ percentage|floatformat:2 }}%</span>
+                        </div>
+                        <div class="percentage-breakdown">
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Present:</span>
+                                <span class="breakdown-value">{{ present_days }} days</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Absent:</span>
+                                <span class="breakdown-value">{{ absent_days }} days</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Total:</span>
+                                <span class="breakdown-value">{{ total_days }} days</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Graph Container -->
+                <!-- Attendance Graph -->
                 <div class="attendance-graph-container">
-                    <h2>Attendance Graph</h2>
-                    <canvas id="attendanceChart"></canvas>
+                    <h2 class="section-title">Attendance Overview</h2>
+                    <div class="chart-container">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
                 </div>
             {% endif %}
         {% else %}
-            <p>No attendance records found.</p>
+            <div class="no-results">
+                <div class="no-results-icon">📊</div>
+                <h3>No Attendance Records Found</h3>
+                <p>No attendance records match your search criteria.</p>
+                <a href="{% url 'home' %}" class="back-button">New Search</a>
+            </div>
         {% endif %}
     </div>
 
 <!-- Chart.js Library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var ctx = document.getElementById('attendanceChart').getContext('2d');
-    var attendanceData = {
-        labels: [{% for record in attendance_records %}"{{ record.date }}",{% endfor %}],
-        datasets: [{
-            label: 'Attendance Status',
-            data: [{% for record in attendance_records %}{{ record.present|yesno:"1,0" }},{% endfor %}],
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-        }]
-    };
-    var attendanceChart = new Chart(ctx, {
-        type: 'line',  
-        data: attendanceData,
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return value === 1 ? 'Present' : 'Absent';
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if attendance_records and percentage is not None %}
+        var ctx = document.getElementById('attendanceChart').getContext('2d');
+        
+        // Prepare data for chart
+        var dates = [{% for record in attendance_records %}"{{ record.date|date:'M j' }}",{% endfor %}];
+        var statusData = [{% for record in attendance_records %}{{ record.present|yesno:"1,0" }},{% endfor %}];
+        
+        var attendanceChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Attendance Status',
+                    data: statusData,
+                    backgroundColor: statusData.map(function(val) {
+                        return val === 1 ? 'rgba(46, 204, 113, 0.7)' : 'rgba(231, 76, 60, 0.7)';
+                    }),
+                    borderColor: statusData.map(function(val) {
+                        return val === 1 ? 'rgba(46, 204, 113, 1)' : 'rgba(231, 76, 60, 1)';
+                    }),
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value === 1 ? 'Present' : (value === 0 ? 'Absent' : '');
+                            },
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y === 1 ? 'Present' : 'Absent';
+                            }
                         }
                     }
                 }
             }
-        }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            attendanceChart.resize();
+        });
+        {% endif %}
     });
 </script>
 
 <style>
+    /* Mobile First Styles */
     .search-results-container {
-        width: 80%;
+        width: 95%;
         max-width: 1200px;
-        margin: 40px auto;
+        margin: 20px auto;
         background-color: #212E3C;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         color: #C5C6C7;
         text-align: center;
+        box-sizing: border-box;
     }
 
     .search-results-header {
         background-color: #4F6C8A;
         color: #C5C6C7;
-        padding: 10px 20px;
+        padding: 15px 20px;
         border-radius: 10px 10px 0 0;
-        margin: -20px -20px 20px -20px;
+        margin: -20px -20px 25px -20px;
+        font-size: 20px;
+        font-weight: 700;
+        word-wrap: break-word;
+    }
+
+    .student-info {
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: #2C3E50;
+        border-radius: 8px;
+        border-left: 4px solid #4F6C8A;
     }
 
     .student-name {
         color: #C5C6C7;
-        margin: 20px 0;
+        margin: 0 0 8px 0;
+        font-size: 18px;
+    }
+
+    .student-roll {
+        color: #66FCF1;
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    /* Summary Cards */
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .summary-card {
+        background-color: #2C3E50;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        border-top: 4px solid #4F6C8A;
+    }
+
+    .card-value {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .card-value.present {
+        color: #2ECC71;
+    }
+
+    .card-value.absent {
+        color: #E74C3C;
+    }
+
+    .card-label {
+        font-size: 14px;
+        color: #C5C6C7;
+        font-weight: 600;
+    }
+
+    /* Table Styles */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        margin-bottom: 30px;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+        background-color: #2C3E50;
+        padding: 1px;
     }
 
     .attendance-table {
         width: 100%;
         border-collapse: collapse;
         color: #C5C6C7;
-        margin: auto;
+        min-width: 400px;
     }
 
-    .attendance-table th, .attendance-table td {
-        border: 1px solid #4F6C8A;
-        padding: 8px;
+    .attendance-table th {
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        padding: 12px 15px;
+        font-weight: 600;
+        text-align: left;
     }
 
+    .attendance-table td {
+        padding: 10px 15px;
+        border-bottom: 1px solid #34495E;
+        text-align: left;
+    }
+
+    .status-present {
+        background-color: rgba(46, 204, 113, 0.1);
+    }
+
+    .status-absent {
+        background-color: rgba(231, 76, 60, 0.1);
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-badge.present {
+        background-color: #2ECC71;
+        color: white;
+    }
+
+    .status-badge.absent {
+        background-color: #E74C3C;
+        color: white;
+    }
+
+    /* Progress Circle */
     .attendance-percentage-container {
-        margin-top: 20px;
-        text-align: center;
+        margin: 30px 0;
+        padding: 20px;
+        background-color: #2C3E50;
+        border-radius: 8px;
+        border-left: 4px solid #4F6C8A;
+    }
+
+    .section-title {
+        color: #C5C6C7;
+        margin-bottom: 20px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .progress-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
     }
 
     .progress-circle {
         width: 150px;
         height: 150px;
         position: relative;
-        display: inline-block;
-        border-radius: 50%;
-        border: 5px solid #66FCF1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .progress-circle-outer {
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        border: 5px solid #2C3E50;
-        position: absolute;
-        top: 0;
-        left: 0;
+        background: conic-gradient(#2ECC71 0deg, #2ECC71 calc({{ percentage|floatformat:0 }} * 3.6deg), #34495E calc({{ percentage|floatformat:0 }} * 3.6deg), #34495E 360deg);
+        position: relative;
     }
 
-    .progress-circle-inner {
-        width: 100%;
-        height: 100%;
+    .progress-circle-outer::before {
+        content: '';
+        position: absolute;
+        width: 80%;
+        height: 80%;
+        background-color: #2C3E50;
         border-radius: 50%;
-        border: 5px solid transparent;
-        position: absolute;
-        top: 0;
-        left: 0;
-        clip: rect(0, 75px, 150px, 0);
+        top: 10%;
+        left: 10%;
     }
 
-    .progress-circle span {
+    .percentage-text {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: #C5C6C7;
         font-size: 24px;
         font-weight: bold;
+        color: #C5C6C7;
     }
 
+    .percentage-breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .breakdown-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background-color: #34495E;
+        border-radius: 5px;
+    }
+
+    .breakdown-label {
+        color: #C5C6C7;
+        font-weight: 600;
+    }
+
+    .breakdown-value {
+        color: #66FCF1;
+        font-weight: 600;
+    }
+
+    /* Chart Container */
     .attendance-graph-container {
-        margin-top: 30px;
+        margin: 30px 0;
+        padding: 20px;
+        background-color: #2C3E50;
+        border-radius: 8px;
+        border-left: 4px solid #4F6C8A;
     }
 
+    .chart-container {
+        width: 100%;
+        height: 300px;
+        position: relative;
+    }
 
-    @media (max-width: 768px) {
-        .search-results-header {
-            font-size: 20px;
-            padding: 8px;
+    /* No Results State */
+    .no-results {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .no-results-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+
+    .no-results h3 {
+        color: #C5C6C7;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .no-results p {
+        color: #7F8C8D;
+        margin-bottom: 25px;
+    }
+
+    .back-button {
+        display: inline-block;
+        padding: 12px 25px;
+        background-color: #4F6C8A;
+        color: #C5C6C7;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+        background-color: #3A5A78;
+        transform: translateY(-2px);
+    }
+
+    /* Medium screens (tablets) */
+    @media (min-width: 768px) {
+        .search-results-container {
+            width: 90%;
+            padding: 25px;
+            margin: 30px auto;
         }
 
-        .attendance-table th, .attendance-table td {
-            padding: 6px;
+        .search-results-header {
+            margin: -25px -25px 25px -25px;
+            padding: 18px 25px;
+            font-size: 22px;
+        }
+
+        .student-name {
+            font-size: 20px;
+        }
+
+        .progress-container {
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .percentage-breakdown {
+            width: auto;
+        }
+
+        .chart-container {
+            height: 350px;
+        }
+    }
+
+    /* Large screens (desktops) */
+    @media (min-width: 992px) {
+        .search-results-container {
+            width: 85%;
+            margin: 40px auto;
+        }
+
+        .search-results-header {
+            font-size: 24px;
+        }
+
+        .summary-cards {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .progress-circle {
+            width: 180px;
+            height: 180px;
+        }
+
+        .percentage-text {
+            font-size: 28px;
+        }
+
+        .chart-container {
+            height: 400px;
+        }
+    }
+
+    /* Very small screens */
+    @media (max-width: 480px) {
+        .search-results-container {
+            width: 98%;
+            padding: 15px;
+            margin: 15px auto;
+        }
+
+        .search-results-header {
+            margin: -15px -15px 20px -15px;
+            padding: 12px 15px;
+            font-size: 18px;
+        }
+
+        .student-info {
+            padding: 12px;
+        }
+
+        .student-name {
+            font-size: 16px;
+        }
+
+        .summary-cards {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+        }
+
+        .percentage-text {
+            font-size: 20px;
+        }
+
+        .chart-container {
+            height: 250px;
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            padding: 8px 10px;
             font-size: 14px;
         }
-
-        .attendance-percentage-container {
-            margin-top: 15px;
-        }
-
-        .progress-circle {
-            width: 100px;
-            height: 100px;
-        }
-
-        .progress-circle span {
-            font-size: 18px;
-        }
-
-        .attendance-graph-container canvas {
-            width: 100%; 
-        }
     }
 
-    @media (max-width: 480px) {
+    /* Print styles */
+    @media print {
+        .search-results-container {
+            background-color: white;
+            color: black;
+            box-shadow: none;
+        }
+        
         .search-results-header {
-            font-size: 18px;
+            background-color: #f0f0f0;
+            color: black;
         }
-
-        .attendance-table th, .attendance-table td {
-            font-size: 12px;
+        
+        .student-info,
+        .attendance-percentage-container,
+        .attendance-graph-container {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
         }
-
-        .progress-circle {
-            width: 80px;
-            height: 80px;
-        }
-
-        .attendance-graph-container canvas {
-            width: 100%;
+        
+        .back-button {
+            display: none;
         }
     }
 </style>

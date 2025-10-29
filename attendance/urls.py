@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
-
+from .views import MyPasswordResetView
 urlpatterns = [
     path('', views.home, name='home'),
     path('signup/', views.signup, name='signup'),
@@ -20,9 +20,11 @@ urlpatterns = [
     path('class/<int:class_id>/take_attendance/', views.take_attendance, name='take_attendance'),
     path('class/<int:class_id>/attendance_history/', views.attendance_history, name='attendance_history'),
     path('class/<int:class_id>/generate_report/', views.generate_report, name='generate_report'),
-     path('password_reset/', auth_views.PasswordResetView.as_view(template_name="attendance/password_reset_form.html"),
-        name='password_reset'),
-    path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(template_name="attendance/password_reset_done.html"), name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="attendance/password_reset_confirm.html"), name='password_reset_confirm'),
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name="attendance/password_reset_complete.html"), name='password_reset_complete'),
+    path('password_reset/', MyPasswordResetView.as_view(), name='password_reset'),
+    path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(
+        template_name="attendance/password_reset_done.html"), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name="attendance/password_reset_confirm.html"), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
+        template_name="attendance/password_reset_complete.html"), name='password_reset_complete'),
 ]

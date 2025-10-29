@@ -3,133 +3,399 @@
 
 {% block content %}
     <div class="edit-student-container">
-        <h1 class="edit-header">Edit Student Details: {{ student.name }}</h1>
-        <form method="post" action="" class="edit-student-form">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_name" class="form-label">Student Name:</label>
-                <input type="text" id="id_name" name="name" value="{{ student.name }}" required class="form-input">
-            </div>
-            <div class="form-group">
-                <label for="id_roll_no" class="form-label">Roll No:</label>
-                <input type="text" id="id_roll_no" name="roll_no" value="{{ student.roll_no }}" required class="form-input">
-            </div>
-            <div class="form-group">
-                <label for="id_guardian_email" class="form-label">Guardian Email:</label>
-                <input type="email" id="id_guardian_email" name="guardian_email" value="{{ student.guardian_email }}" required class="form-input">
-            </div>
-            
-            <div class="button-group">
-                <button type="submit" class="save-button">Save Changes</button>
-                <a href="{% url 'class_detail' student.classstudent_set.first.class_name.id %}" class="back-button">Back to Class Detail</a>
-            </div>
-        </form>
+        <div class="edit-student-box">
+            <h1 class="edit-header">Edit Student Details: {{ student.name }}</h1>
+            <form method="post" action="" class="edit-student-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_name" class="form-label">Student Name:</label>
+                    <input type="text" id="id_name" name="name" value="{{ student.name }}" required class="form-input" placeholder="Enter student name">
+                </div>
+                <div class="form-group">
+                    <label for="id_roll_no" class="form-label">Roll No:</label>
+                    <input type="text" id="id_roll_no" name="roll_no" value="{{ student.roll_no }}" required class="form-input" placeholder="Enter roll number">
+                </div>
+                <div class="form-group">
+                    <label for="id_guardian_email" class="form-label">Guardian Email:</label>
+                    <input type="email" id="id_guardian_email" name="guardian_email" value="{{ student.guardian_email }}" class="form-input" placeholder="Enter guardian email">
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="save-button">
+                        <span class="button-text">Save Changes</span>
+                        <span class="button-loading" style="display: none;">Saving...</span>
+                    </button>
+                    <a href="{% url 'class_detail' student.classstudent_set.first.class_name.id %}" class="back-button">Back to Class Detail</a>
+                </div>
+            </form>
+        </div>
     </div>
 
 <style>
-
+    /* Mobile First Styles */
     .edit-student-container {
-        width: 80%;
-        margin: 40px auto;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 20px 15px;
+        box-sizing: border-box;
+    }
+
+    .edit-student-box {
+        width: 100%;
+        max-width: 500px;
         background-color: #212E3C;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         font-family: 'Poppins', sans-serif;
-        text-align: center; 
     }
 
- 
     .edit-header {
         background-color: #4F6C8A;
         color: #C5C6C7;
-        padding: 16px 24px;
+        padding: 15px 20px;
         border-radius: 10px 10px 0 0;
-        margin: -20px -20px 20px -20px;
-        font-size: 24px;
+        margin: -20px -20px 25px -20px;
+        font-size: 20px;
         text-align: center;
+        font-weight: 700;
+        word-wrap: break-word;
+        line-height: 1.3;
     }
 
- 
     .edit-student-form {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 15px;
+        gap: 20px;
     }
 
     .form-group {
-        margin-bottom: 15px;
-        width: 100%;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
     }
 
     .form-label {
-        font-size: 18px;
-        
+        font-size: 16px;
         color: #C5C6C7;
-        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
     }
 
     .form-input {
-        margin-top:10px;
-        width: 40%;
-        padding: 10px;
+        width: 100%;
+        padding: 12px 15px;
         background-color: #2C3E50;
         color: #C5C6C7;
         border: none;
         border-radius: 5px;
         font-size: 16px;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #4F6C8A;
+    }
+
+    .form-input::placeholder {
+        color: #7F8C8D;
+    }
+
+    .error-message {
+        color: #E74C3C;
+        font-size: 14px;
+        margin-top: 5px;
+        padding: 5px 10px;
+        background-color: rgba(231, 76, 60, 0.1);
+        border-radius: 3px;
+        border-left: 3px solid #E74C3C;
+    }
+
+    .success-message {
+        background-color: rgba(46, 204, 113, 0.1);
+        color: #2ECC71;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        border-left: 3px solid #2ECC71;
         text-align: center;
     }
 
     .button-group {
         display: flex;
-        justify-content: center;
-        gap: 20px; 
-        margin-top: 20px;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
     }
 
     .save-button {
-        padding: 10px 20px;
+        padding: 14px 20px;
         background-color: #4F6C8A;
         color: #C5C6C7;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         font-size: 16px;
-        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        min-height: 48px;
+    }
+
+    .save-button:hover {
+        background-color: #3A5A78;
+        transform: translateY(-1px);
+    }
+
+    .save-button:active {
+        transform: translateY(0);
+    }
+
+    .save-button.loading {
+        background-color: #2C3E50;
+        cursor: not-allowed;
+    }
+
+    .save-button.loading .button-text {
+        display: none;
+    }
+
+    .save-button.loading .button-loading {
+        display: inline;
     }
 
     .back-button {
         display: inline-block;
-        padding: 10px 20px;
-        background-color: #4F6C8A;
+        padding: 14px 20px;
+        background-color: #2C3E50;
         color: #C5C6C7;
         text-decoration: none;
         border-radius: 5px;
         font-size: 16px;
+        font-weight: 600;
         text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid #4F6C8A;
     }
 
- 
-    @media (max-width: 768px) {
+    .back-button:hover {
+        background-color: #4F6C8A;
+        transform: translateY(-1px);
+    }
+
+    /* Medium screens (tablets) */
+    @media (min-width: 600px) {
         .edit-student-container {
-            width: 90%; 
+            padding: 30px 20px;
         }
 
-        .form-input {
-            width: 90%; 
+        .edit-student-box {
+            padding: 25px;
+        }
+
+        .edit-header {
+            margin: -25px -25px 25px -25px;
+            padding: 18px 25px;
+            font-size: 22px;
         }
 
         .button-group {
-            flex-direction: column; 
-            gap: 10px; 
+            flex-direction: row;
+            justify-content: center;
         }
 
         .save-button,
         .back-button {
-            width: 100%; 
+            flex: 1;
+            max-width: 200px;
+        }
+    }
+
+    /* Large screens (desktops) */
+    @media (min-width: 992px) {
+        .edit-student-container {
+            padding: 40px;
+        }
+
+        .edit-student-box {
+            max-width: 550px;
+        }
+
+        .edit-header {
+            font-size: 24px;
+        }
+
+        .form-input {
+            padding: 14px 15px;
+        }
+    }
+
+    /* Very small screens */
+    @media (max-width: 360px) {
+        .edit-student-container {
+            padding: 15px 10px;
+        }
+
+        .edit-student-box {
+            padding: 15px;
+        }
+
+        .edit-header {
+            margin: -15px -15px 20px -15px;
+            padding: 12px 15px;
+            font-size: 18px;
+        }
+
+        .form-input,
+        .save-button,
+        .back-button {
+            font-size: 15px;
+            padding: 12px;
+        }
+    }
+
+    /* Print styles */
+    @media print {
+        .edit-student-box {
+            background-color: white;
+            color: black;
+            box-shadow: none;
+        }
+        
+        .edit-header {
+            background-color: #f0f0f0;
+            color: black;
+        }
+        
+        .form-input {
+            background-color: #f9f9f9;
+            color: black;
+            border: 1px solid #ccc;
+        }
+        
+        .back-button {
+            display: none;
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.edit-student-form');
+        const saveButton = document.querySelector('.save-button');
+        
+        // Form validation
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Remove existing error messages
+            document.querySelectorAll('.error-message').forEach(msg => {
+                if (msg.parentNode) {
+                    msg.parentNode.removeChild(msg);
+                }
+            });
+            
+            // Validate student name
+            const nameInput = document.getElementById('id_name');
+            if (!nameInput.value.trim()) {
+                showError(nameInput, 'Student name is required');
+                isValid = false;
+            }
+            
+            // Validate roll number
+            const rollNoInput = document.getElementById('id_roll_no');
+            if (!rollNoInput.value.trim()) {
+                showError(rollNoInput, 'Roll number is required');
+                isValid = false;
+            }
+            
+            // Validate email format if provided
+            const emailInput = document.getElementById('id_guardian_email');
+            if (emailInput.value.trim() && !isValidEmail(emailInput.value)) {
+                showError(emailInput, 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Show loading state
+                saveButton.classList.add('loading');
+                saveButton.disabled = true;
+                
+                // Re-enable after 3 seconds (in case of slow submission)
+                setTimeout(() => {
+                    saveButton.classList.remove('loading');
+                    saveButton.disabled = false;
+                }, 3000);
+            } else {
+                e.preventDefault();
+                
+                // Scroll to first error
+                const firstError = document.querySelector('.error-message');
+                if (firstError) {
+                    firstError.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                }
+            }
+        });
+        
+        function showError(input, message) {
+            const error = document.createElement('div');
+            error.className = 'error-message';
+            error.textContent = message;
+            input.parentNode.appendChild(error);
+            input.style.border = '1px solid #E74C3C';
+            
+            // Add focus to problematic field
+            input.focus();
+        }
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // Clear error when user starts typing
+        const inputs = form.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                this.style.border = 'none';
+                const error = this.parentNode.querySelector('.error-message');
+                if (error) {
+                    error.remove();
+                }
+            });
+        });
+        
+        // Add success message if URL contains success parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success')) {
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.textContent = 'Student details updated successfully!';
+            form.insertBefore(successMsg, form.firstChild);
+            
+            // Remove success message after 5 seconds
+            setTimeout(() => {
+                successMsg.remove();
+            }, 5000);
+        }
+        
+        // Auto-save draft functionality (optional)
+        let draftTimeout;
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                clearTimeout(draftTimeout);
+                draftTimeout = setTimeout(() => {
+                    // Could implement auto-save to localStorage here
+                    console.log('Form data changed - could auto-save draft');
+                }, 1000);
+            });
+        });
+    });
+</script>
 {% endblock %}

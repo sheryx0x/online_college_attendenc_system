@@ -12,7 +12,8 @@ from reportlab.pdfgen import canvas
 from datetime import date
 from django.core.mail import send_mail
 from django.conf import settings
-
+from django.contrib.auth.views import PasswordResetView
+from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Attendance, Class, Department
@@ -295,8 +296,9 @@ def attendance_records(request, class_id, date):
     
 def search_attendance(request):
     student_name = request.GET.get('student_name')
-    roll_no = request.GET.get('roll_no')  
-    subject = request.GET.get('subject')
+    roll_no = request.GET.get('roll_no')
+    department_id = request.GET.get('department')
+    class_id = request.GET.get('class')
     filter_type = request.GET.get('filter_type')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -305,30 +307,35 @@ def search_attendance(request):
     attendance_records = []
     percentage = None
 
-    if student_name and roll_no:  
+    if student_name and roll_no:
         try:
-            
+            # Get student
             student = Student.objects.get(name__icontains=student_name, roll_no=roll_no)
             class_students = ClassStudent.objects.filter(student=student)
 
-            if subject:
-                class_students = class_students.filter(class_name__name__icontains=subject)
+            # Optional class filter
+            if class_id:
+                class_students = class_students.filter(class_name_id=class_id)
+            elif department_id:
+                class_students = class_students.filter(class_name__department_id=department_id)
+
+            # Apply filters
+            attendances = Attendance.objects.filter(class_student__in=class_students)
 
             if filter_type == 'month' and month:
                 try:
-                    month_start = datetime.strptime(month, '%B')
-                    year = datetime.now().year
-                    month_start = month_start.replace(year=year)
-                    next_month_start = (month_start.replace(day=28) + timedelta(days=4)).replace(day=1)
+                    month = int(month)
+                    year = datetime.now().year  # or make selectable via form
+                    month_start = date(year, month, 1)
+                    if month == 12:
+                        next_month_start = date(year + 1, 1, 1)
+                    else:
+                        next_month_start = date(year, month + 1, 1)
+                    attendances = attendances.filter(date__gte=month_start, date__lt=next_month_start)
                 except ValueError:
-                    month_start = None
-
-                if month_start:
-                    attendances = Attendance.objects.filter(class_student__in=class_students, date__gte=month_start, date__lt=next_month_start)
-                else:
                     attendances = Attendance.objects.none()
             else:
-                attendances = Attendance.objects.filter(class_student__in=class_students)
+                # Date range filter
                 if start_date:
                     attendances = attendances.filter(date__gte=start_date)
                 if end_date:
@@ -338,17 +345,25 @@ def search_attendance(request):
             present_days = attendances.filter(present=True).count()
             
             if total_days > 0:
-                percentage = (present_days / total_days) * 100
+                percentage = round((present_days / total_days) * 100, 2)
 
             attendance_records = attendances.order_by('date')
+
         except Student.DoesNotExist:
-            pass
+            attendance_records = []
+            percentage = None
 
     return render(request, 'attendance/search_results.html', {
         'attendance_records': attendance_records,
         'percentage': percentage,
         'student_name': student_name,
-        'roll_no': roll_no,  
+        'roll_no': roll_no,
+        'department_id': department_id,
+        'class_id': class_id,
+        'filter_type': filter_type,
+        'start_date': start_date,
+        'end_date': end_date,
+        'month': month,
     })
 
 
@@ -513,3 +528,14 @@ def generate_pdf(attendances, class_instance, student):
 
     return response
 
+class MyPasswordResetView(PasswordResetView):
+    template_name = "attendance/password_reset_form.html"
+    email_template_name = "attendance/password_reset_email.html"
+    success_url = reverse_lazy("password_reset_done")
+
+    def form_valid(self, form):
+        form.save(
+            domain_override='18.232.65.45',  # Replace with your EC2 public IP and port
+            use_https=False,  # Set True if using HTTPS
+        )
+        return super().form_valid(form)
