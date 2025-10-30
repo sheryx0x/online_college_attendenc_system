@@ -227,7 +227,7 @@ def send_absence_email(student, teacher_email, class_name):
         "Please contact the school for further information."
     )
     
-    from_email = 'sherykhx@gmail.com'
+    from_email = 'your email'#-------------------->
     
     send_mail(subject, teacher_message, from_email, [teacher_email])
     
@@ -535,7 +535,7 @@ class MyPasswordResetView(PasswordResetView):
 
     def form_valid(self, form):
         form.save(
-            domain_override='18.232.65.45',  # Replace with your EC2 public IP and port
+            domain_override='',  # Replace with your EC2 public IP and port
             use_https=False,  # Set True if using HTTPS
         )
         return super().form_valid(form)
